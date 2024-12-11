@@ -7,24 +7,24 @@ from scipy import stats
 
 def remove_outliers(X, threshold=3.0):
     
-    z_scores = np.abs(stats.zscore(X))  # Calculate Z-scores
+    z_scores = np.abs(stats.zscore(X))
     m=np.nanmean(np.array(z_scores))
     z_scores_filled = z_scores.apply(lambda col: col.fillna(m), axis=0)
 
-    threshold = 3  # Define a threshold for outlier removal
+    threshold = 3  
     return X[(z_scores_filled < threshold).all(axis=1)]
 
 def balance_data(X_train, y_train):
     X_resampled, y_resampled = X_train.copy(), y_train.copy()
-    X_resampled['state'] = y_resampled  # Add target column to features
+    X_resampled['state'] = y_resampled  
 
-    minority_class = X_resampled[X_resampled['state'] == 1]  # Assume 1 is the minority class
-    majority_class = X_resampled[X_resampled['state'] == 0]  # Assume 0 is the majority class
+    minority_class = X_resampled[X_resampled['state'] == 1]  
+    majority_class = X_resampled[X_resampled['state'] == 0]  
 
     minority_upsampled = resample(minority_class, 
-                                   replace=True,    # Sample with replacement
-                                   n_samples=len(majority_class),  # Equal number of samples as majority class
-                                   random_state=443)  # For reproducibility
+                                   replace=True,   
+                                   n_samples=len(majority_class),  
+                                   random_state=443)  
 
     X_resampled = pd.concat([majority_class, minority_upsampled])
     y_resampled = X_resampled.pop('state')
